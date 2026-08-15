@@ -2,13 +2,18 @@ import axios from 'axios';
 
 const API_BASE_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/api`;
 
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  timeout: 60000,
+});
+
 export const checkHealth = async () => {
-  const response = await axios.get(`${API_BASE_URL}/health`);
+  const response = await apiClient.get('/health', { timeout: 15000 });
   return response.data;
 };
 
 export const predictTextNews = async (text) => {
-  const response = await axios.post(`${API_BASE_URL}/predict/text`, { text });
+  const response = await apiClient.post('/predict/text', { text });
   return response.data;
 };
 
@@ -16,7 +21,7 @@ export const predictImageNews = async (imageFile) => {
   const formData = new FormData();
   formData.append('file', imageFile);
 
-  const response = await axios.post(`${API_BASE_URL}/predict/image`, formData, {
+  const response = await apiClient.post('/predict/image', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -25,6 +30,6 @@ export const predictImageNews = async (imageFile) => {
 };
 
 export const verifyNewsSources = async (text) => {
-  const response = await axios.post(`${API_BASE_URL}/verify`, { text });
+  const response = await apiClient.post('/verify', { text });
   return response.data;
 };
