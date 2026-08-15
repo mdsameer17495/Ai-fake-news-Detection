@@ -1,13 +1,24 @@
 import sys
 import os
 
-# Add backend directory to sys.path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Add parent directory of 'app' and 'app' directory itself to sys.path
+current_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(current_dir)
+
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.endpoints import router
-from app.config import settings
+
+try:
+    from app.api.endpoints import router
+    from app.config import settings
+except ModuleNotFoundError:
+    from api.endpoints import router
+    from config import settings
 
 app = FastAPI(
     title=settings.APP_NAME,
@@ -23,6 +34,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.get("/")
+def root():
+    return {"status": "online", "message": "AI Fake News Detection API is running"}
 
 app.include_router(router, prefix="/api")
 

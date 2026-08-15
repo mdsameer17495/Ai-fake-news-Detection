@@ -1,6 +1,9 @@
 import httpx
 import re
-from app.config import settings
+try:
+    from app.config import settings
+except ModuleNotFoundError:
+    from config import settings
 
 STOP_WORDS = {
     'a', 'about', 'above', 'after', 'again', 'against', 'all', 'am', 'an', 'and', 'any', 'are', 'aren\'t', 'as', 'at',

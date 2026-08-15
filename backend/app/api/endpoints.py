@@ -1,8 +1,13 @@
 from fastapi import APIRouter, File, UploadFile, HTTPException
 from pydantic import BaseModel, Field
-from app.services.model_service import model_service
-from app.services.ocr_service import extract_text_from_image
-from app.services.verify_service import verify_news_sources
+try:
+    from app.services.model_service import model_service
+    from app.services.ocr_service import extract_text_from_image
+    from app.services.verify_service import verify_news_sources
+except ModuleNotFoundError:
+    from services.model_service import model_service
+    from services.ocr_service import extract_text_from_image
+    from services.verify_service import verify_news_sources
 
 router = APIRouter()
 

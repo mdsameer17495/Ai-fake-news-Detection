@@ -2,7 +2,10 @@ import os
 import re
 import joblib
 import numpy as np
-from app.config import settings
+try:
+    from app.config import settings
+except ModuleNotFoundError:
+    from config import settings
 
 def clean_text(text: str) -> str:
     if not isinstance(text, str):
