@@ -96,7 +96,7 @@ export default function VerifySection({ onAnalysisComplete }) {
         disclaimer: res.disclaimer
       });
     } catch (err) {
-      const msg = err.response?.data?.detail || 'Failed to extract or analyze news image.';
+      const msg = err.response?.data?.detail || err.message || 'Failed to extract or analyze news image.';
       setApiError(msg);
     } finally {
       setLoading(false);

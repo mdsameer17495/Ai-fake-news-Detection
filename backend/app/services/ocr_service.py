@@ -67,17 +67,28 @@ def extract_text_from_image(image_bytes: bytes) -> dict:
         if image.mode not in ("L", "RGB"):
             image = image.convert("RGB")
             
-        # Extract text using Hindi + English language configuration (hin+eng) with fallback to eng
+        # Extract text using Hindi + English language configuration (hin+eng) with fallbacks
+        extracted_text = ""
         try:
             extracted_text = pytesseract.image_to_string(image, lang="hin+eng").strip()
-        except Exception as lang_err:
-            print(f"Warning: hin+eng OCR failed ({lang_err}), falling back to eng...")
-            extracted_text = pytesseract.image_to_string(image, lang="eng").strip()
+        except Exception as e1:
+            print(f"Warning: hin+eng OCR failed ({e1}), trying eng...")
+            try:
+                extracted_text = pytesseract.image_to_string(image, lang="eng").strip()
+            except Exception as e2:
+                print(f"Warning: eng OCR failed ({e2}), trying default...")
+                try:
+                    extracted_text = pytesseract.image_to_string(image).strip()
+                except Exception as e3:
+                    return {
+                        "success": False,
+                        "error": f"OCR engine error: {str(e3)}"
+                    }
         
-        if not extracted_text or len(extracted_text.split()) < 2:
+        if not extracted_text or len(extracted_text.strip()) == 0:
             return {
                 "success": False,
-                "error": "No readable text was detected in this image. Please try a clearer screenshot or article image."
+                "error": "No readable text was detected in this image. Please upload a clear image containing news text."
             }
             
         return {
