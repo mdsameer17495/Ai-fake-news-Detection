@@ -17,6 +17,59 @@ def clean_text(text: str) -> str:
     text = re.sub(r'\s+', ' ', text).strip().lower()
     return text
 
+def is_valid_news_article(text: str) -> tuple[bool, str]:
+    if not text or not isinstance(text, str):
+        return False, "Input text is empty."
+
+    raw_text = text.strip()
+    words = raw_text.split()
+    if len(words) < 4:
+        return False, "Text is too short to be evaluated as a news article (minimum 4 words required)."
+
+    lower_text = raw_text.lower()
+
+    # 1. Check for conversational / chat / non-news patterns
+    conversational_patterns = [
+        r'^(i love|i like|i hate|i am|i feel|i think|i want|i need|my name is)\b',
+        r'^(hi|hello|hey|greetings|good morning|good afternoon|good evening)\b',
+        r'^(how are you|what is|who is|where is|can you|tell me|write a|explain to me)\b',
+        r'\b(i love machine learning|i love ai|i like programming|how do you do)\b',
+    ]
+
+    news_indicators = [
+        'said', 'reported', 'announced', 'according to', 'minister', 'government',
+        'police', 'official', 'court', 'university', 'notice', 'circular', 'statement',
+        'president', 'pm', 'cm', 'bureau', 'spokesperson', 'dept', 'department',
+        'policy', 'bill', 'law', 'press', 'conference', 'source', 'sources'
+    ]
+
+    for pattern in conversational_patterns:
+        if re.search(pattern, lower_text):
+            has_news_kw = any(kw in lower_text for kw in news_indicators)
+            if not has_news_kw or len(words) < 15:
+                return False, "Input appears to be conversational or casual text rather than a news article."
+
+    # 2. Check for gibberish / repeated character noise
+    if re.search(r'(.)\1{4,}', lower_text):
+        return False, "Input contains invalid or repeated character noise."
+
+    if re.search(r'\b[bcdfghjklmnpqrstvwxyz]{6,}\b', lower_text):
+        return False, "Input contains unrecognized or gibberish character sequences."
+
+    if re.search(r'\b(asdfgh|jklqwerty|zxcvbnm|qwertyuiop)\b', lower_text):
+        return False, "Input contains random keyboard pattern gibberish."
+
+    latin_words = [w for w in words if re.match(r'^[a-zA-Z]+$', w)]
+    if latin_words:
+        total_chars = sum(len(w) for w in latin_words)
+        vowels = sum(w.count(v) for w in latin_words for v in 'aeiouy')
+        if total_chars >= 10:
+            v_ratio = vowels / total_chars
+            if v_ratio < 0.12 or v_ratio > 0.65:
+                return False, "Input text structure does not resemble natural news reporting sentences."
+
+    return True, ""
+
 class ModelService:
     def __init__(self):
         self.model = None
@@ -55,12 +108,20 @@ class ModelService:
                 "status": "model_missing"
             }
 
-        cleaned = clean_text(text)
-        if not cleaned or len(cleaned.split()) < 3:
+        is_valid, validation_msg = is_valid_news_article(text)
+        if not is_valid:
             return {
-                "error": "Article text is too short or contains insufficient word content for analysis.",
-                "status": "invalid_input"
+                "status": "invalid_input",
+                "prediction": "INVALID / NOT A NEWS ARTICLE",
+                "confidence": 0.0,
+                "category": "N/A",
+                "signals": [],
+                "reasons": [validation_msg, "The submitted text does not match standard news reporting structure."],
+                "error": validation_msg,
+                "disclaimer": "Only factual news articles, press releases, or official circulars can be evaluated for truth verification."
             }
+
+        cleaned = clean_text(text)
 
         # Vectorize text
         tfidf_features = self.vectorizer.transform([cleaned])

@@ -56,7 +56,10 @@ export default function App() {
         {currentResult && (
           <>
             <ResultCard result={currentResult} />
-            <SourceVerification articleText={currentResult.articleText || currentResult.extractedText} />
+            <SourceVerification 
+              articleText={currentResult.articleText || currentResult.extractedText} 
+              initialData={currentResult.verification_data} 
+            />
           </>
         )}
       </main>

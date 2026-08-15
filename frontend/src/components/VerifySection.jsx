@@ -38,6 +38,8 @@ export default function VerifySection({ onAnalysisComplete }) {
         category: data.category,
         signals: data.signals,
         reasons: data.reasons,
+        verification_data: data.verification_data,
+        verified_articles: data.verified_articles,
         disclaimer: data.disclaimer
       });
     } catch (err) {
@@ -93,6 +95,8 @@ export default function VerifySection({ onAnalysisComplete }) {
         category: res.category,
         signals: res.signals,
         reasons: res.reasons,
+        verification_data: res.verification_data,
+        verified_articles: res.verified_articles,
         disclaimer: res.disclaimer
       });
     } catch (err) {

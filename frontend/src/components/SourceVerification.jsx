@@ -2,15 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Globe, ExternalLink, Loader2, AlertCircle, Search, CheckCircle } from 'lucide-react';
 import { verifyNewsSources } from '../services/api';
 
-export default function SourceVerification({ articleText }) {
+export default function SourceVerification({ articleText, initialData }) {
   const [loading, setLoading] = useState(false);
-  const [verificationData, setVerificationData] = useState(null);
+  const [verificationData, setVerificationData] = useState(initialData || null);
 
   useEffect(() => {
-    if (articleText) {
+    if (initialData) {
+      setVerificationData(initialData);
+    } else if (articleText) {
       handleVerify(articleText);
     }
-  }, [articleText]);
+  }, [articleText, initialData]);
 
   const handleVerify = async (textToVerify) => {
     setLoading(true);
