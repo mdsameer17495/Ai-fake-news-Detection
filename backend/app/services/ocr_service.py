@@ -1,6 +1,7 @@
 import os
 import io
 import shutil
+import platform
 import pytesseract
 from PIL import Image
 
@@ -10,7 +11,13 @@ def find_tesseract_cmd() -> str:
     if path_cmd and os.path.exists(path_cmd):
         return path_cmd
 
-    # 2. Common Windows installation paths
+    # 2. Common Linux installation paths (Render, Ubuntu, Debian)
+    linux_candidates = [
+        "/usr/bin/tesseract",
+        "/usr/local/bin/tesseract",
+    ]
+
+    # 3. Common Windows installation paths
     windows_candidates = [
         r"C:\Program Files\Tesseract-OCR\tesseract.exe",
         r"C:\Program Files (x86)\Tesseract-OCR\tesseract.exe",
@@ -18,7 +25,13 @@ def find_tesseract_cmd() -> str:
         os.path.expanduser(r"~\AppData\Local\Tesseract-OCR\tesseract.exe"),
     ]
 
-    for candidate in windows_candidates:
+    # Choose candidates based on platform
+    if platform.system() == "Windows":
+        candidates = windows_candidates + linux_candidates
+    else:
+        candidates = linux_candidates + windows_candidates
+
+    for candidate in candidates:
         if os.path.exists(candidate):
             return candidate
 
@@ -35,7 +48,7 @@ else:
 def extract_text_from_image(image_bytes: bytes) -> dict:
     # Ensure tesseract_cmd is set if discovered
     cmd = pytesseract.pytesseract.tesseract_cmd
-    if not cmd or not os.path.exists(cmd):
+    if not cmd or (cmd != "tesseract" and not os.path.exists(cmd)):
         # Try rediscovering dynamically
         discovered = find_tesseract_cmd()
         if discovered:
@@ -44,7 +57,7 @@ def extract_text_from_image(image_bytes: bytes) -> dict:
         else:
             return {
                 "success": False,
-                "error": "Tesseract OCR binary engine is not found on the server paths (e.g. C:\\Program Files\\Tesseract-OCR\\tesseract.exe)."
+                "error": "Tesseract OCR is not installed on this server. Please ensure tesseract-ocr is installed (apt install tesseract-ocr on Linux, or install from https://github.com/UB-Mannheim/tesseract/wiki on Windows)."
             }
 
     try:
