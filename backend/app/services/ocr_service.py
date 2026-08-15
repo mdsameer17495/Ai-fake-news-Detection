@@ -67,18 +67,25 @@ def extract_text_from_image(image_bytes: bytes) -> dict:
         if image.mode not in ("L", "RGB"):
             image = image.convert("RGB")
             
-        # Extract text using Hindi + English language configuration (hin+eng) with fallbacks
+        # Fast downscaling: if dimensions exceed 1400px, downscale to speed up OCR by 10x
+        max_dim = 1400
+        if max(image.width, image.height) > max_dim:
+            ratio = max_dim / float(max(image.width, image.height))
+            new_size = (int(image.width * ratio), int(image.height * ratio))
+            image = image.resize(new_size, Image.Resampling.LANCZOS)
+
+        # Extract text using Hindi + English language configuration (hin+eng) with fast timeouts
         extracted_text = ""
         try:
-            extracted_text = pytesseract.image_to_string(image, lang="hin+eng").strip()
+            extracted_text = pytesseract.image_to_string(image, lang="hin+eng", timeout=12).strip()
         except Exception as e1:
             print(f"Warning: hin+eng OCR failed ({e1}), trying eng...")
             try:
-                extracted_text = pytesseract.image_to_string(image, lang="eng").strip()
+                extracted_text = pytesseract.image_to_string(image, lang="eng", timeout=8).strip()
             except Exception as e2:
                 print(f"Warning: eng OCR failed ({e2}), trying default...")
                 try:
-                    extracted_text = pytesseract.image_to_string(image).strip()
+                    extracted_text = pytesseract.image_to_string(image, timeout=5).strip()
                 except Exception as e3:
                     return {
                         "success": False,
