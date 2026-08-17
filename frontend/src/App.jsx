@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
-import HowItWorks from './components/HowItWorks';
+
 import VerifySection from './components/VerifySection';
 import ResultCard from './components/ResultCard';
 import SourceVerification from './components/SourceVerification';
@@ -29,9 +29,7 @@ export default function App() {
     document.getElementById('verify')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const scrollToHowItWorks = () => {
-    document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
-  };
+
 
   const handleAnalysisComplete = (resultData) => {
     setCurrentResult(resultData);
@@ -47,9 +45,9 @@ export default function App() {
       <Navbar healthStatus={health} />
       
       <main className="flex-grow">
-        <Hero onVerifyClick={scrollToVerify} onHowItWorksClick={scrollToHowItWorks} />
+        <Hero onVerifyClick={scrollToVerify} />
         
-        <HowItWorks />
+
         
         <VerifySection onAnalysisComplete={handleAnalysisComplete} />
         

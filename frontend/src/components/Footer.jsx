@@ -8,12 +8,11 @@ export default function Footer() {
         
         <div className="flex items-center gap-2">
           <ShieldAlert className="h-5 w-5 text-blue-500" />
-          <span className="font-semibold text-slate-300">VeriTruth AI</span>
-          <span>— College AI/ML Capstone Project</span>
+          <span className="font-semibold text-slate-300"></span>
         </div>
 
         <p className="text-slate-500">
-          Built with Python FastAPI, scikit-learn (TF-IDF + Logistic Regression), Tesseract OCR, and React.
+         
         </p>
       </div>
     </footer>

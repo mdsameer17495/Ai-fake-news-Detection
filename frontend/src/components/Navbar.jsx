@@ -11,14 +11,13 @@ export default function Navbar({ healthStatus }) {
           </div>
           <div>
             <span className="font-bold text-lg text-white tracking-wide flex items-center gap-2">
-              VeriTruth <span className="text-xs bg-blue-500/20 text-blue-400 font-semibold px-2 py-0.5 rounded-full border border-blue-500/30">AI ML Project</span>
+              VeriTruth <span className="text-xs bg-blue-500/20 text-blue-400 font-semibold px-2 py-0.5 rounded-full border border-blue-500/30"></span>
             </span>
           </div>
         </div>
 
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-300">
           <a href="#hero" className="hover:text-blue-400 transition-colors">Home</a>
-          <a href="#how-it-works" className="hover:text-blue-400 transition-colors">How It Works</a>
           <a href="#verify" className="hover:text-blue-400 transition-colors">Verify News</a>
         </nav>
 

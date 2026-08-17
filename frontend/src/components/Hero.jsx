@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowRight, ShieldCheck, Sparkles, FileText, Image as ImageIcon, Cpu, CheckSquare } from 'lucide-react';
 
-export default function Hero({ onVerifyClick, onHowItWorksClick }) {
+export default function Hero({ onVerifyClick }) {
   return (
     <section id="hero" className="relative overflow-hidden pt-12 pb-16 lg:pt-20 lg:pb-24">
       {/* Background glow effects */}
@@ -28,13 +28,6 @@ export default function Hero({ onVerifyClick, onHowItWorksClick }) {
           >
             Verify News
             <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
-          </button>
-
-          <button
-            onClick={onHowItWorksClick}
-            className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 text-slate-200 font-semibold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
-          >
-            How It Works
           </button>
         </div>
 
